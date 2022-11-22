@@ -49,6 +49,11 @@ module tb_nba;
   integer i;
   integer fd;
 
+  initial begin
+    $dumpfile ("dumpfile.vcd");
+    $dumpvars;
+  end
+
   initial clk = 1'b0;
   always  #(period/2) clk = ~clk;
 
@@ -60,15 +65,18 @@ module tb_nba;
     $readmemh("../data/answers.txt", answers, 0, NUM_ROUND-1);
 
     for (i=0; i<NUM_ROUND; i=i+1) begin
+    // for (i=0; i < 5; i=i+1) begin  
       reset = 0;
       answer = answers[i];
       @(posedge clk);
       #(delta);
       reset = 1;
       @(posedge correct, (cnt == 200));
+      // @(posedge correct);
       #(delta);
       ccnt[i] = cnt;
       $fwrite(fd, "%4t round : %4d, answer : %4h, ccnt : %4d\n", $time, i, answers[i], ccnt[i]);
+      $display("%4t round : %4d, answer : %4h, ccnt : %4d\n", $time, i, answers[i], ccnt[i]);
     end
 
     avg_ccnt = 0.0;
