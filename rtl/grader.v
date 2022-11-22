@@ -97,7 +97,7 @@ always @(posedge clk) begin
           strike_reg[0] <= 1'b0;
           ball_reg[0] <= 1'b0;
         end
-  
+        
         if(answer[11:8] == question[11:8]) begin
           strike_reg[1] <= 1'b1;
           ball_reg[1] <= 1'b0;

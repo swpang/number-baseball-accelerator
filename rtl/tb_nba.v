@@ -52,7 +52,7 @@ module tb_nba;
   initial clk = 1'b0;
   always  #(period/2) clk = ~clk;
 
-  `define STUDENT_ID "2022-31086"
+  `define STUDENT_ID "2017-11405"
   `define LOG_PATH {"../logs/", `STUDENT_ID, ".log"}
   initial begin
     $timeformat(-9, 0, "ns", 0);
