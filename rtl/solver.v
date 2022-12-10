@@ -35,19 +35,17 @@ module solver(
   assign question = temp_question;
   assign ask_valid = av;
   assign ask_ready = ar;
-  
+
+  // always @(sum)       $display("sum : %d", sum);
+  // always @(ref_sum)   $display("ref_sum : %d", ref_sum);
+  // always @(state)     $display("state : %d", state);
   // always @(ref_question[3], ref_question[2], ref_question[1], ref_question[0])
-  //   $display("question : %d%d%d%d", ref_question[3], ref_question[2], ref_question[1], ref_question[0]);
-  always @(sum)       $display("sum : %d", sum);
-  always @(ref_sum)   $display("ref_sum : %d", ref_sum);
-  always @(state)     $display("state : %d", state);
-  always @(ref_question[3], ref_question[2], ref_question[1], ref_question[0])
-                      $display("ref_q : %d%d%d%d", ref_question[3], ref_question[2], ref_question[1], ref_question[0]);
+  //                     $display("ref_q : %d%d%d%d", ref_question[3], ref_question[2], ref_question[1], ref_question[0]);
   always @(question)  $display("quest : %h", question);
 
   always @(posedge clk) begin
     if (!reset) begin
-      temp_question <= 15'd0;
+      temp_question <= 16'd0;
       av <= 1'b0;
       ar <= 1'b1;
 
