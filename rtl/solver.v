@@ -27,6 +27,10 @@ module solver(
   reg [3:0] counter;
   reg [3:0] ref_question[3:0];
 
+  reg num_replaced;
+  reg [15:0] replaced_num;
+  reg [39:0] donottry;
+
   reg av;
   reg ar;
   reg [15:0] temp_question;
@@ -41,11 +45,12 @@ module solver(
   // always @(state)     $display("state : %d", state);
   // always @(ref_question[3], ref_question[2], ref_question[1], ref_question[0])
   //                     $display("ref_q : %d%d%d%d", ref_question[3], ref_question[2], ref_question[1], ref_question[0]);
-  always @(question)  $display("quest : %h", question);
+  // always @(question)  $display("quest : %h", question);
+  // always @(donottry) $display("donottry: %h", donottry);
 
   always @(posedge clk) begin
     if (!reset) begin
-      temp_question <= 16'd0;
+      temp_question <= INITIAL_QUESTION;
       av <= 1'b0;
       ar <= 1'b1;
 
@@ -54,10 +59,15 @@ module solver(
       state <= S0;
       comb_state <= 5'd1;
       temp_question <= 0;
+      
       ref_question[0] <= 0;
       ref_question[1] <= 0;
       ref_question[2] <= 0;
       ref_question[3] <= 0;
+
+      replaced_num <= 16'bz;
+      donottry <= 40'bz;
+      num_replaced <= 0;
     end
     else begin
       case (state)
@@ -96,6 +106,13 @@ module solver(
               counter = counter + 1;
               while ((counter == ref_question[3]) || (counter == ref_question[2]) 
                     || (counter == ref_question[1]) || (counter == ref_question[0])
+                    || (counter == replaced_num[15:12]) || (counter == replaced_num[11:8])
+                    || (counter == replaced_num[7:4]) || (counter == replaced_num[3:0])
+                    || (counter == donottry[39:36]) || (counter == donottry[35:32])
+                    || (counter == donottry[31:28]) || (counter == donottry[27:24])
+                    || (counter == donottry[23:20]) || (counter == donottry[19:16])
+                    || (counter == donottry[15:12]) || (counter == donottry[11:8])
+                    || (counter == donottry[7:4]) || (counter == donottry[3:0])
                     && (counter+1 < 4'd10))
                 counter = counter + 1;
               av <= 1'b1;
@@ -125,6 +142,14 @@ module solver(
               ref_question[2] <= question[11:8];
               ref_question[1] <= question[7:4];
               ref_question[0] <= question[3:0];
+              // save the replaced number (to not try again later)
+              replaced_num[15:12] <= ref_question[3];
+              num_replaced <= 1;
+              if (!num_replaced) begin
+                replaced_num[11:8] <= ref_question[3];
+                replaced_num[7:4] <= ref_question[3];
+                replaced_num[3:0] <= ref_question[3];
+              end
 
               state <= S2;
               ref_sum <= sum;
@@ -133,6 +158,11 @@ module solver(
             else if (counter == 4'd9) begin
               state <= S2;
               counter <= 0;
+            end
+            // if sum decreases, this option should not be attempted again
+            else if (sum < ref_sum) begin
+              donottry <= {donottry[36:0], counter};
+              state <= S1;
             end
             else state <= S1;
           end
@@ -145,6 +175,13 @@ module solver(
               counter = counter + 1;
               while ((counter == ref_question[3]) || (counter == ref_question[2]) 
                     || (counter == ref_question[1]) || (counter == ref_question[0])
+                    || (counter == replaced_num[15:12]) || (counter == replaced_num[11:8])
+                    || (counter == replaced_num[7:4]) || (counter == replaced_num[3:0])
+                    || (counter == donottry[39:36]) || (counter == donottry[35:32])
+                    || (counter == donottry[31:28]) || (counter == donottry[27:24])
+                    || (counter == donottry[23:20]) || (counter == donottry[19:16])
+                    || (counter == donottry[15:12]) || (counter == donottry[11:8])
+                    || (counter == donottry[7:4]) || (counter == donottry[3:0])
                     && (counter+1 < 4'd10))
                 counter = counter + 1;
               av <= 1'b1;
@@ -174,6 +211,14 @@ module solver(
               ref_question[2] <= question[11:8];
               ref_question[1] <= question[7:4];
               ref_question[0] <= question[3:0];
+              // save the replaced number (to not try again later)
+              replaced_num[11:8] <= ref_question[2];
+              num_replaced <= 1;
+              if (!num_replaced) begin
+                replaced_num[15:12] <= ref_question[2];
+                replaced_num[7:4] <= ref_question[2];
+                replaced_num[3:0] <= ref_question[2];
+              end
 
               state <= S3;
               ref_sum <= sum;
@@ -182,6 +227,11 @@ module solver(
             else if (counter == 4'd9) begin
               state <= S3;
               counter <= 0;
+            end
+            // if sum decreases, this option should not be attempted again
+            else if (sum < ref_sum) begin
+              donottry <= {donottry[36:0], counter};
+              state <= S2;
             end
             else state <= S2;
           end
@@ -194,6 +244,13 @@ module solver(
               counter = counter + 1;
               while ((counter == ref_question[3]) || (counter == ref_question[2]) 
                     || (counter == ref_question[1]) || (counter == ref_question[0])
+                    || (counter == replaced_num[15:12]) || (counter == replaced_num[11:8])
+                    || (counter == replaced_num[7:4]) || (counter == replaced_num[3:0])
+                    || (counter == donottry[39:36]) || (counter == donottry[35:32])
+                    || (counter == donottry[31:28]) || (counter == donottry[27:24])
+                    || (counter == donottry[23:20]) || (counter == donottry[19:16])
+                    || (counter == donottry[15:12]) || (counter == donottry[11:8])
+                    || (counter == donottry[7:4]) || (counter == donottry[3:0])
                     && (counter+1 < 4'd10))
                 counter = counter + 1;
               av <= 1'b1;
@@ -224,6 +281,14 @@ module solver(
               ref_question[1] <= question[7:4];
               ref_question[0] <= question[3:0];
 
+              replaced_num[7:4] <= ref_question[1];
+              num_replaced <= 1;
+              if (!num_replaced) begin
+                replaced_num[15:12] <= ref_question[1];
+                replaced_num[11:8] <= ref_question[1];
+                replaced_num[3:0] <= ref_question[1];
+              end
+
               state <= S4;
               ref_sum <= sum;
               counter <= 0;
@@ -231,6 +296,11 @@ module solver(
             else if (counter == 4'd9) begin
               state <= S4;
               counter <= 0;
+            end
+            // if sum decreases, this option should not be attempted again
+            else if (sum < ref_sum) begin
+              donottry <= {donottry[36:0], counter};
+              state <= S3;
             end
             else state <= S3;
           end
@@ -242,6 +312,13 @@ module solver(
               counter = counter + 1;
               while ((counter == ref_question[3]) || (counter == ref_question[2]) 
                     || (counter == ref_question[1]) || (counter == ref_question[0])
+                    || (counter == replaced_num[15:12]) || (counter == replaced_num[11:8])
+                    || (counter == replaced_num[7:4]) || (counter == replaced_num[3:0])
+                    || (counter == donottry[39:36]) || (counter == donottry[35:32])
+                    || (counter == donottry[31:28]) || (counter == donottry[27:24])
+                    || (counter == donottry[23:20]) || (counter == donottry[19:16])
+                    || (counter == donottry[15:12]) || (counter == donottry[11:8])
+                    || (counter == donottry[7:4]) || (counter == donottry[3:0])
                     && (counter+1 < 4'd10))
                 counter = counter + 1;
               av <= 1'b1;

@@ -19,6 +19,12 @@ reg reply_valid_int;
 reg reply_ready_int;
 reg [15:0] cnt_deadlock;
 
+always @(*) begin
+  if(ask_valid & reply_ready) begin
+    $display("quest : %h", question);
+  end
+end
+
 assign strike = (strike_reg[3] + strike_reg[2] + strike_reg[1] + strike_reg[0]);
 assign ball = (ball_reg[3] + ball_reg[2] + ball_reg[1] + ball_reg[0]);
 assign correct = (strike_reg[3] & strike_reg[2] & strike_reg[1] & strike_reg[0]);

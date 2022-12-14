@@ -2,7 +2,7 @@
 
 module tb_nba;
 
-  localparam NUM_ROUND = 1024;
+  localparam NUM_ROUND = 1025;
   localparam period = 10;
   localparam delta = 0.001;
 
@@ -64,8 +64,7 @@ module tb_nba;
     fd = $fopen(`LOG_PATH, "w");
     $readmemh("../data/answers.txt", answers, 0, NUM_ROUND-1);
 
-    for (i=0; i<NUM_ROUND; i=i+1) begin
-    // for (i=0; i < 5; i=i+1) begin  
+    for (i=0; i<NUM_ROUND; i=i+1) begin 
       reset = 0;
       answer = answers[i];
       @(posedge clk);
