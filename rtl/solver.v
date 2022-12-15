@@ -57,7 +57,7 @@ module solver(
       counter <= 0;
       ref_sum <= 0;
       state <= S0;
-      comb_state <= 5'd1;
+      comb_state <= 5'd2;
       temp_question <= 0;
       
       ref_question[0] <= 0;
@@ -348,18 +348,11 @@ module solver(
         end
 
         S5 : begin
-          if (!reply_valid && !ask_valid) begin
+          if (!reply_valid && !ask_valid && !correct) begin
             av <= 1'b1;
             ar <= 1'b0;
 
             case (comb_state) 
-              5'd1 : begin
-                temp_question[15:12] <= ref_question[3];
-                temp_question[11:8]  <= ref_question[2];
-                temp_question[7:4]   <= ref_question[1];
-                temp_question[3:0]   <= ref_question[0];
-              end
-
               5'd2 : begin
                 temp_question[15:12] <= ref_question[3];
                 temp_question[11:8]  <= ref_question[2];
@@ -528,15 +521,11 @@ module solver(
             ar <= 1'b1;
           end
 
-          if (reply_valid)
-            if (!(correct)) 
-              if (comb_state < 24)
-                comb_state <= comb_state + 1;
+          if (reply_valid && !correct)
+            if (comb_state < 24)
+              comb_state <= comb_state + 1;
         end
       endcase
     end
   end
 endmodule
-
-
-
